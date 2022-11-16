@@ -1,0 +1,109 @@
+<div class="modal" id="modal-incidencia">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <div class="has-text-right">
+                <button class="delete close"></button>
+            </div>
+            <p class="is-size-3 has-text-centered pt-0 mt-0 pb-3">Nueva Incidencia</p>
+            <form action="/incidencias/new" method="post">
+                <div class="field">
+                    <label class="label">Area</label>
+                    <div class="control">
+                        <div class="select">
+                            <select id="area">
+                                <option value="rs" selected>Rastreo Satelital</option>
+                                <option value="">Otra</option> 
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="field">
+                    <label class="label">Tipo de falla</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="falla">
+                                <option value="" disabled selected>Seleccione tipo de falla</option>
+                                <% for (let falla of tipofallas){%>
+                                    <option value="<%= falla.idfalla %>"><%= falla.nombre %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>    
+                <div class="field" >
+                    <label class="label">Cliente</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="cliente" id="clientes_select">
+                                <option value="" disabled selected>Seleccione cliente</option>
+                                <% for (let cliente of clientes){%>
+                                    <option value="<%= cliente.usuario %>"><%= cliente.razonsocial %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>    
+                <div class="field" id="unidades">
+                    <label class="label">Unidad</label>
+                    <div class="control">
+                        <div class="select" id="unidades_lista">
+                            <select name="unidad" id="unidades_select" disabled>
+                                <option value="" disabled selected>Seleccione unidad</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="field">
+                    <label class="label">Describa la falla</label>
+                    <textarea  name="descripcion" class="textarea" placeholder="Descripcion" maxlength="500"></textarea>
+                </div> 
+                <div class="field is-grouped is-grouped-centered">
+                    <div class="control">
+                        <input type="submit" class="button is-info" id="enviar" name="enviar" value="Registrar">
+                    </div>
+                </div> 
+            </form>    
+        </div>
+    </div>
+</div>
+<script>
+      //unidades
+    const unidades = document.querySelector('#unidades')
+    const area = document.getElementById('area');
+    area.addEventListener('click', ()=>{
+        if (area.value === "rs")
+            unidades.classList.remove('is-hidden');
+        else
+            unidades.classList.add('is-hidden');
+})
+
+        const clientes = document.getElementById('clientes_select');
+        clientes.addEventListener('change', ()=> {
+            fetch('/incidencias/get_unidades/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({cliente: clientes.value,}),
+            }).then(result => {
+                return result.json(); //Regresa otra promesa
+            }).then(data => {
+                let html = '<select name="unidad" id="unidades_select">'
+                html += `<option value="" disabled selected>Seleccione unidad</option>`;
+                for (let unidad of data){
+                    html += `<option value="${unidad.imei }">${ unidad.nombre }</option>`;
+                }
+                html += `</select>`;
+                document.getElementById("unidades_select").disabled = false;
+                document.getElementById('unidades_lista').innerHTML = html;
+            }).catch(err => {
+                console.log(err);
+            });
+
+        });
+</script>

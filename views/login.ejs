@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Digitools-login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://kit.fontawesome.com/b55e056e8f.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar has-shadow is-size-3">
+        <div class="navbar-brand">
+            <a href="" class="navbar-item">
+                <img src="/assets/logo.png" alt="logo" >
+            </a>
+        </div>    
+    </nav>
+    <div class="section">
+        <div class="container" style="max-width: 400px">
+          <% if (info != '') { %>
+            <div class="notification is-danger is-light mt-5 ">
+              <button class="delete"></button>
+              <p>
+                  <%= info %>
+              </p>
+            </div>
+          <% } %>
+          <div class="box">
+            <form action="/user/login" method="post">
+              <div class="field">
+                  <label class="label">Credenciales</label>
+                  <div class="control has-icons-left">
+                  <input class="input is-dark" type="text" id="username" autocomplete="username" name="username" placeholder="Nombre de usuario" value="">
+                  <span class="icon is-small is-left">
+                      <i class="fas fa-user"></i>
+                  </span>
+                  </div>
+              </div>
+              <div class="field">
+                  <p class="control has-icons-left">
+                    <input class="input" type="password" id="password" name="password" autocomplete="current-password" placeholder="Contraseña">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                  </p>
+              </div>
+              <div class="field level-item">
+                  <p class="control">
+                      <input type="submit" class="button is-link" id="enviar" name="enviar" value="Iniciar Sesión">
+                  </p>
+                </div>
+              </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+      document.querySelectorAll(".notification .delete")
+          .forEach(function ($deleteButton) {
+              const parentNotification = $deleteButton.parentNode;
+              $deleteButton.addEventListener('click', function () {
+                  parentNotification.parentNode
+                      .removeChild(parentNotification);
+              });
+          });
+    </script>
+
+</body>
+</html>

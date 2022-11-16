@@ -1,0 +1,217 @@
+<%- include('../includes/head.ejs') %>
+    <div class="container">
+        <div class="has-text-centered">
+            <h1 class="is-size-2 is-centered">Incidencias</h1>
+        </div>
+        <% if (!tickets_sa.length < 1) {%>
+        <div class="section has-text-centered" id="tabla_sa">
+            <h1 class="is-size-4">Sin Asignar</h1>
+            <br>
+            <div class="table-container" >
+                <table class="table is-hoverable is-fullwidth has-text-centered">
+                    <col style="width: 15%">
+                    <col style="width: 25%">
+                    <col style="width: 25%">
+                    <col style="width: 10%">
+                    <col style="width: 25%">
+                    <thead>
+                        <tr>
+                            <th class="has-text-centered">IdTicket</th>
+                            <th class="has-text-centered">Cliente</th>
+                            <th class="has-text-centered">Unidad</th>
+                            <th class="has-text-centered">Status</th>
+                            <th class="has-text-centered">Asignar</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                            <% for (let ticket of tickets_sa) {%>
+                                <tr>
+                                    <td><a href="/incidencias/<%= ticket.idticket %>"><button class="button is-small is-info" style="width: 60px;"><%= ticket.idticket %></button></a></td>
+                                    <td><%= ticket.razonsocial %></td>
+                                    <td><%= ticket.unidad %></td>
+                                    <td class="is-success has-text-dark"><strong><%= ticket.nombre %></strong></td>
+                                    <td>
+                                        <div class="control">
+                                            <div class="select"  role="menu">
+                                                <select class="select asig" id="<%= ticket.idticket %>" >
+                                                    <option value="" disabled selected>seleccione</option>
+                                                    <% for (let trabajador of trabajadores) {%>
+                                                    <option value="<%= trabajador.usuario %>"><%= trabajador.usuario %></option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                            <div class="button is-info is-small" onclick="asignarfunc( '<%= ticket.idticket %>' )">Asignar</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <% }%>
+        <div class="section has-text-centered">
+            <% if (permisos.indexOf('ver_todos') == -1) {%>
+                <h1 class="is-size-4">Mis Incidencias</h1>
+            <% }else {%>
+                <h1 class="is-size-4">Todas</h1>
+            <% } %>
+            <br>
+            <input class="input" id="buscar" type="text" placeholder="Buscar por id, cliente o unidad">
+            <br>
+            <div class="table-container">
+                <table class="table is-hoverable is-fullwidth has-text-centered">
+                    <col style="width: 20%">
+                    <col style="width: 35%">
+                    <col style="width: 35%">
+                    <col style="width: 10%">
+                    <thead>
+                        <tr>
+                            <th class="has-text-centered">IdTicket</th>
+                            <th class="has-text-centered">Cliente</th>
+                            <th class="has-text-centered">Unidad</th>
+                            <th class="has-text-centered">Status</th>
+                            <th class="has-text-centered">Costo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista">
+                            <% for (let ticket of tickets_a) {%>
+                                <tr>
+                                    <td><a href="/incidencias/<%= ticket.idticket %>"><button class="button is-small is-info" style="width: 60px;"><%= ticket.idticket %></button></a></td>
+                                    <td><%= ticket.razonsocial %></td>
+                                    <td><%= ticket.unidad %></td>
+                                    <td class="
+                                    <% if(ticket.idstatus == 1){%>
+                                        is-success 
+                                    <% }else if(ticket.idstatus == 2){%>
+                                        is-warning
+                                    <% }else if(ticket.idstatus == 3){%>
+                                        is-danger
+                                    <% }%>
+                                    has-text-dark"><strong><%= ticket.nombre %></strong></td>
+                                    <td>
+                                        <% if(ticket.costo){ %>
+                                            $<%= ticket.costo %>
+                                        <% }else{ %>
+                                            -
+                                        <%} %>
+                                    </td>
+                                </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        accion_asincrona = () => {
+            let valor_busqueda = document.getElementById('buscar').value;
+            fetch('/incidencias/buscar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({valor_busqueda: valor_busqueda,}),
+            }).then(result => {
+                return result.json(); //Regresa otra promesa
+            }).then(data => {
+                let html = '';
+                for (let ticket of data){
+                    html += `<tr>
+                                <td><a href="/incidencias/${ ticket.idticket }"><button class="button is-small is-info">${ ticket.idticket }</button></a></td>
+                                <td>${ticket.razonsocial }</td>
+                                <td>${ticket.unidad }</td>
+                                <td class="is-success has-text-dark"><strong>${ ticket.nombre }</strong></td>
+                                <td>`
+                                    if(ticket.costo){
+                                        html += `$${ticket.costo }`
+                                    }else{
+                                        html += `-`
+                                    } 
+                                html += `</td>
+                            </tr>`
+                    
+                }
+                document.getElementById('lista').innerHTML = html;
+            }).catch(err => {
+                console.log(err);
+            });
+        };
+        document.getElementById('buscar').onkeyup = accion_asincrona;
+
+        function asignarfunc(idticket) {
+            let usuarioTrabajador = document.getElementById(idticket).value;
+            fetch('/incidencias/asignar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    usuarioTrabajador: usuarioTrabajador,
+                    idticket: idticket,
+                }),
+            }).then(result => {
+                return result.json(); //Regresa otra promesa
+            }).then(data => {
+                let html = '';
+                if (data.length >  0){
+                    html +=`
+                    <h1 class="is-size-4">Sin Asignar</h1>
+                    <br>
+                    <div class="table-container" >
+                        <table class="table is-hoverable is-fullwidth has-text-centered">
+                            <col style="width: 15%">
+                            <col style="width: 25%">
+                            <col style="width: 25%">
+                            <col style="width: 10%">
+                            <col style="width: 25%">
+                            <thead>
+                                <tr>
+                                    <th class="has-text-centered">IdTicket</th>
+                                    <th class="has-text-centered">Cliente</th>
+                                    <th class="has-text-centered">Unidad</th>
+                                    <th class="has-text-centered">Status</th>
+                                    <th class="has-text-centered">Asignar</th>
+                                </tr>
+                            </thead>
+                            <tbody >`
+                    for (let ticket of data.tsa){
+                        html +=`<tr>
+                                    <td><a href="/incidencias/${ ticket.idticket }"><button class="button is-small is-info" style="width: 60px;">${ ticket.idticket }</button></a></td>
+                                    <td>${ ticket.razonsocial }</td>
+                                    <td>${ ticket.unidad }</td>
+                                    <td class="is-success has-text-dark"><strong>${ ticket.nombre }</strong></td>
+                                    <td>
+                                        <div class="control">
+                                            <div class="select"  role="menu">
+                                                <select class="select asig" id="${ ticket.idticket }" >
+                                                    <option value="" disabled selected>seleccione</option>`
+                                                    for (let trabajador of data.t) {
+                                                    html=+`
+                                                    <option value="${ trabajador.usuario }">${ trabajador.usuario }</option>`
+                                                    } 
+                                                html += `    
+                                                </select>
+                                            </div>
+                                            <div class="button is-info is-small" onclick="asignarfunc( ${ ticket.idticket } )">Asignar</div>
+                                        </div>
+                                    </td>
+                                </tr>`
+                    }
+                    html +=`
+                    </tbody>
+                    </table>
+                    </div>`
+                }
+                console.log(html);
+                document.getElementById('tabla_sa').innerHTML = html;
+            }).catch(err => {
+                console.log(err);
+            });
+        };
+
+
+    </script>
+        
+<%- include('../includes/foot.ejs') %>

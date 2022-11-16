@@ -1,0 +1,40 @@
+<div class="modal" id="modal-trabajo">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <div class="has-text-right">
+                <button class="delete close"></button>
+            </div>
+            <p class="is-size-3 has-text-centered pt-0 mt-0 pb-3">Nuevo Trabajo</p>
+            <form action="/incidencias/<%= ticket.idticket %>" method="post">
+                <div class="field">
+                    <label class="label">ID Ticket</label>
+                    <div class="control">
+                        <input name="idticket" class="button is-static" type="number" value="<%= ticket.idticket %>" readonly>
+                    </div>
+                </div>
+                <br>
+                <div class="field">
+                    <label class="label">Descripción</label>
+                    <textarea name="descripcion" class="textarea" type="text" placeholder="Se actualizó el rastreador" maxlength="500" required></textarea>
+                </div>
+                <br>
+                <div class="field">
+                    <label class="label">Costo</label>
+                    <div class="control has-icons-left">
+                        <input name="costo" class="input" type="number" placeholder="350" maxlength="11">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-dollar"></i>
+                        </span>
+                    </div>
+                </div>
+                <br>
+                <div class="field is-grouped is-grouped-centered">
+                    <div class="control">
+                        <input type="submit" class="button is-info" name="enviar" value="Registrar">
+                    </div>
+                </div>   
+            </form>  
+        </div>
+    </div>
+</div>

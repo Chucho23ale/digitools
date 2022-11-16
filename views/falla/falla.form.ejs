@@ -1,0 +1,29 @@
+<div class="container">
+    <div class="section has-text-centered">
+        <h1 class="is-size-3">Tipos de Falla</h1>
+        <br>
+        <div class="table-container">
+            <table class="table is-hoverable is-fullwidth">
+                <col style="width: 50%">
+                <col style="width: 50%">
+                <thead>
+                    <tr>
+                        <th class="has-text-centered">ID</th>
+                        <th class="has-text-centered">Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i of tipofallas) { %> 
+                        <tr>
+                            <td><%= i.idfalla %></td>
+                            <td><%= i.nombre %></td>
+                            <td><a href="/fallas/<%= i.idfalla %>"><button class="delete is-medium"></button></a></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <button data-target="modal-falla" class="js-modal-trigger button is-info">Agregar</button>
+    </div>
+</div>

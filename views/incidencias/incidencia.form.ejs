@@ -1,0 +1,100 @@
+<div class="container">
+    <div class="section">
+        <div class="has-text-centered">
+            <h1 class="is-size-2">Ticket #<%= ticket.idticket %></h1>
+        </div>
+        <div class="has-text-right">
+        <% if(ticket.idstatus != 3){%>
+            <a href="/incidencias/cerrar/<%= ticket.idticket %>" class="button is-info">Cerrar</a>
+        <% }else{%>
+            <a href="/incidencias/abrir/<%= ticket.idticket %>" class="button is-info">Abrir</a>
+        <% } %>
+        </div>
+        <br>
+        <div class="box">
+            <nav class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                <p class="heading">Fecha</p>
+                <p class="title"><%= ticket.fechainicio %></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                <p class="heading">Cliente</p>
+                <p class="title"><%= ticket.razonsocial %></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                <p class="heading">Unidad</p>
+                <p class="title"><%= ticket.unidad %></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                <p class="heading">Status</p>
+                <p class="title"><%= ticket.nombre %></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                <p class="heading">Costo</p>
+                <p class="title">
+                    <% if(ticket.costo){ %>
+                    $<%= ticket.costo %>
+                    <% }else{ %>
+                        -
+                    <%} %></p>
+                </div>
+            </div>
+        </nav>
+        </div> 
+        <br>
+        <h1 class="is-size-3">Descripción</h1>
+        <div class="box">
+            <p><%= ticket.descripcion %></p>
+        </div>
+    </div>
+    <div class="section">
+        <div class="columns">
+            <div class="column"><h1 class="is-size-3">Bitácora</h1></div>
+            <% if (permisos.indexOf('trabajo') != -1) { %>
+            <div class="column has-text-right"><button data-target="modal-trabajo" class="js-modal-trigger button is-info">Agregar trabajo</button></div>
+            <% }%>
+        </div>
+        <% for (let trabajo of trabajos) {%>
+        <div class="box">
+            <div class="columns">
+                <div class="column">
+                    <h1><strong><%= trabajo.fecha %></strong></h1>
+                </div>
+                <div class="columns">
+                    <% if (permisos.indexOf('eliminar') != -1) { %>
+                    <a href="/incidencias/<%= ticket.idticket %>/<%= trabajo.idtrabajo %>"><button class="delete is-medium"></button></a>
+                    <% } %>
+                </div>
+            </div>
+            <p><%= trabajo.descripcion %></p>
+            <p>$<%= trabajo.costo %></p>
+        </div>
+        <% } %>
+    </div>
+    <div class="section has-text-centered">
+        <form action="/incidencias/reasignar/" method="POST">
+            <input type="hidden" id="id" name="id" value="<%= ticket.idticket %>">
+            <label class="label">Reasignar</label>
+            <div class="control is-grouped">
+                <div class="select"  role="menu">
+                    <select class="select asig" name="usuarioTrabajador" >
+                        <option value="" disabled selected>seleccione</option>
+                        <% for (let trabajador of trabajadores) {%>
+                        <option value="<%= trabajador.usuario %>"><%= trabajador.usuario %></option>
+                        <% } %>
+                    </select>
+                </div>
+                <input type="submit" class="button is-info" value="Reasignar">
+            </div>
+        </form>
+    </div>
+</div>

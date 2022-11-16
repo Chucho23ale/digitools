@@ -1,0 +1,57 @@
+<div class="modal" id="modal-unidad">
+    <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box">
+                <div class="has-text-right">
+                    <button class="delete close"></button>
+                </div>
+                <p class="is-size-3 has-text-centered pt-0 mt-0 pb-3">Nueva Unidad</p>
+                <form action="/unidades/new" method="post">
+                    <div class="field">
+                        <label class="label">IMEI</label>
+                        <p class="control has-icons-left">
+                            <input name="imei" class="input" type="tel" placeholder="135456" maxlength="15" pattern="[0-9]+" required>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-wifi"></i>
+                            </span>
+                            <% if (info != '') { %>
+                                <p class="help is-danger">
+                                <%= info %>
+                                </p>
+                            <% } %>
+                        </p>
+                    </div>
+                    <br>
+                    <div class="field">
+                        <label class="label">Nombre</label>
+                        <p class="control has-icons-left">
+                            <input name="nombre" class="input" type="text" placeholder="UPK-45BD" maxlength="25" required>
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-car"></i>
+                            </span>
+                        </p>
+                    </div>
+                    <br>
+                    <div class="field">
+                        <label class="label">Cliente</label>
+                        <div class="control">
+                            <div class="select">
+                                <select name="cliente" id="cliente">
+                                    <% for (let cliente of clientes){%>
+                                        <option value="<%= cliente.usuario %>"><%= cliente.razonsocial %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="field  is-grouped is-grouped-centered">
+                        <div class="control">
+                            <input type="submit" class="button is-info" id="enviar" name="enviar" value="Registrar">
+                        </div>
+                    </div>   
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>

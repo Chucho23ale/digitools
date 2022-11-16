@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="section has-text-centered">
+        <h1 class="is-size-3">Clientes</h1>
+        <br>
+        <div class="table-container">
+            <table class="table is-hoverable is-fullwidth">
+                <col style="width: 20%">
+                <col style="width: 60%">
+                <col style="width: 20%">
+                <thead>
+                    <tr>
+                        <th class="has-text-centered">RFC</th>
+                        <th class="has-text-centered">Razón Social</th>
+                        <th class="has-text-centered">Teléfono</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i of clientes) { %> 
+                        <tr>
+                            <td><%= i.rfc %></td>
+                            <td><%= i.razonsocial %></td>
+                            <td><%= i.telefono %></td>
+                            <% if (permisos.indexOf('eliminar') != -1) { %>
+                            <td><a href="/clientes/<%= i.usuario %>"><button class="delete is-medium"></button></a></td>
+                            <% } %>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <button data-target="modal-cliente" class="js-modal-trigger button is-info">Agregar</button>
+        <% if (info != '') { %>
+            <span data-target="modal-cliente" class="js-modal-open"></span>
+        <% } %>
+    </div>
+</div>
