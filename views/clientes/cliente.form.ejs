@@ -20,8 +20,11 @@
                             <td><%= i.rfc %></td>
                             <td><%= i.razonsocial %></td>
                             <td><%= i.telefono %></td>
-                            <% if (permisos.indexOf('eliminar') != -1) { %>
-                            <td><a href="/clientes/<%= i.usuario %>"><button class="delete is-medium"></button></a></td>
+                            <% if (permisos.indexOf('eliminacliente') != -1) { %>
+                            <td><a class="fas fa-pen" href="/clientes/edit/<%= i.usuario %>"></a></td>
+                            <% } %>
+                            <% if (permisos.indexOf('eliminacliente') != -1) { %>
+                            <td><a class="fas fa-trash" href="#" onclick="if (confirm('¿Está seguro que desea eliminar el elemento?')) window.location = '/clientes/<%= i.usuario %>'"></a></td>
                             <% } %>
                         </tr>
                     <% } %>
@@ -29,7 +32,9 @@
             </table>
         </div>
         <br>
+        <% if (permisos.indexOf('registracliente') != -1) { %>
         <button data-target="modal-cliente" class="js-modal-trigger button is-info">Agregar</button>
+        <% }%>
         <% if (info != '') { %>
             <span data-target="modal-cliente" class="js-modal-open"></span>
         <% } %>

@@ -15,21 +15,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (let i of unidades) {%>
+                    <% for (let i of unidades) { %>
                         <tr>
                             <td><%= i.imei %></td>
                             <td><%= i.nombre %></td>
                             <td><%= i.razonsocial %></td>
+                            <% if (permisos.indexOf('editaunidad') != -1) { %>
+                            <td><a class="fas fa-pen" href="/unidades/edit/<%= i.imei %>"></a></td>
+                            <% } %>
                             <% if (permisos.indexOf('eliminar') != -1) { %>
-                            <td><a href="/unidades/<%= i.imei %>"><button class="delete is-medium"></button></a></td>
-                            <%}%>
+                                <td><a class="fas fa-trash" href="#" onclick="if (confirm('¿Está seguro que desea eliminar el elemento?')) window.location = '/unidades/<%= i.imei %>'"></a></td>
+                            <% } %>
                         </tr>
                     <% } %>
                 </tbody>
             </table>
         </div>
         <br>
+        <% if (permisos.indexOf('agregaunidad') != -1) { %>
         <button data-target="modal-unidad" class="js-modal-trigger button is-info">Agregar</button>
+        <% } %>
         <% if (info != '') { %>
             <span data-target="modal-unidad" class="js-modal-open"></span>
         <% } %>

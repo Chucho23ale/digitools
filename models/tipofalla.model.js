@@ -10,11 +10,11 @@ module.exports = class Tipofalla {
     }
 
     static fetchAll(){
-        return db.execute('SELECT * FROM tipodefalla');
+        return db.execute('SELECT * FROM tipodefalla WHERE oculto = 0');
     }
 
     static delete(idfalla) {
         return db.execute(
-            'DELETE FROM tipodefalla WHERE idfalla = ?',[idfalla]);
+            'UPDATE tipodefalla SET oculto = 1 WHERE idfalla = ?',[idfalla]);
     }
 }

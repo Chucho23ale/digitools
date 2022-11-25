@@ -1,7 +1,7 @@
 <nav class="navbar has-shadow is-size-3">
     <div class="navbar-brand">
         <a href="/" class="navbar-item">
-            <img src="/assets/logo.png" alt="logo" >
+            <img src="/assets/logo.png" alt="logo">
         </a>
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="nav-links">
             <span aria-hidden="true"></span>
@@ -10,8 +10,15 @@
         </a>
     </div>
     <div class="navbar-menu is-size-5" id="nav-links">
+        <% if (permisos.indexOf('consultaticket') != -1) { %>
         <a href="/incidencias" class="navbar-item">Incidencias</a>
+        <% } %>
+        <% if (permisos.indexOf('tablerodecontrol') != -1) { %>
         <a href="/control" class="navbar-item">Tablero de Control</a>
+        <% } %>
+        <% if (permisos.indexOf('consultafactura') != -1) { %>
+        <a href="/facturacion" class="navbar-item">Facturación</a>
+        <% } %>
         <% if (permisos.indexOf('boton_administrar') != -1) { %>
         <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link">
@@ -24,17 +31,23 @@
                 <a href="/unidades" class="navbar-item">
                     Unidades
                 </a>
+                <% if (permisos.indexOf('editafallas') != -1) { %>
                 <a href="/fallas" class="navbar-item">
                     Fallas
                 </a>
-                <a class="navbar-item is-hidden">
-                    Configuración
+                <% } %>
+                <% if (permisos.indexOf('registraempleado') != -1) { %>
+                <a href="/empleados" class="navbar-item">
+                    Empleados
                 </a>
+                <% } %>
             </div>
         </div>
         <% } %>
         <div class="navbar-item">
+            <% if (permisos.indexOf('generaticket') != -1) { %>
             <button data-target="modal-incidencia" class="js-modal-trigger button is-info is-size-5">Nueva Incidencia</button>
+            <% } %>
         </div>
     </div>
     </div>

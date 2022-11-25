@@ -5,9 +5,13 @@
         </div>
         <div class="has-text-right">
         <% if(ticket.idstatus != 3){%>
-            <a href="/incidencias/cerrar/<%= ticket.idticket %>" class="button is-info">Cerrar</a>
+            <% if (permisos.indexOf('cierraticket') != -1) { %>
+            <a href="/incidencias/cerrar/<%= ticket.idticket %>" class="button is-danger">Cerrar</a>
+            <% } %>
         <% }else{%>
-            <a href="/incidencias/abrir/<%= ticket.idticket %>" class="button is-info">Abrir</a>
+            <% if (permisos.indexOf('reabreticket') != -1) { %>
+            <a href="/incidencias/abrir/<%= ticket.idticket %>" class="button is-success">Abrir</a>
+            <% } %>
         <% } %>
         </div>
         <br>
@@ -51,15 +55,58 @@
         </nav>
         </div> 
         <br>
-        <h1 class="is-size-3">Descripción</h1>
+        <span class="icon-text">
+            <h1 class="is-size-3">Descripción</h1>
+            <% if (permisos.indexOf('editadescripcion') != -1 && ticket.idstatus != 3) { %>
+            <span class="icon">
+                <a data-target="modal-edit-desc" class="js-modal-trigger fas fa-pen" href="#"></a>
+            </span>
+            <% } %>
+        </span>
         <div class="box">
             <p><%= ticket.descripcion %></p>
         </div>
     </div>
     <div class="section">
+        <div class="columns is-flex-wrap-wrap   ">
+            <% for (let i of img) { %>
+                <div class="column is-one-third">
+                    <figure class="image">
+                        <img src="/uploads/<%= i.name %>" style="max-width: 450px;">
+                    </figure>
+                </div>
+            <% } %>
+        </div>
+        <br>
+        <% if (permisos.indexOf('agregaimagen') != -1 && ticket.idstatus != 3) { %>
+        <form action="/incidencias/img" method="POST"  enctype="multipart/form-data">
+            <input type="hidden" id="id" name="id" value="<%= ticket.idticket %>">
+            <div class="control is-grouped">
+                <div class="file" id="fileupload">
+                    <label class="file-label">
+                        <input class="file-input" type="file" name="archivo" onchange="return fileValidation()">
+                        <span class="file-cta">
+                            <span class="file-icon">
+                                <i class="fas fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                                Seleccione archivos
+                            </span>
+                        </span>
+                        <span class="file-name is-hidden">
+                            
+                        </span>
+                    </label>
+                    <input type="submit" class="button is-info is-hidden" value="Subir">
+                </div>
+            </div>
+        </form>
+        <% } %>
+    </div>
+    <div class="section">
         <div class="columns">
             <div class="column"><h1 class="is-size-3">Bitácora</h1></div>
-            <% if (permisos.indexOf('trabajo') != -1) { %>
+            <% if (permisos.indexOf('agregatrabajo') != -1 && ticket.idstatus != 3) { %>
             <div class="column has-text-right"><button data-target="modal-trabajo" class="js-modal-trigger button is-info">Agregar trabajo</button></div>
             <% }%>
         </div>
@@ -70,8 +117,8 @@
                     <h1><strong><%= trabajo.fecha %></strong></h1>
                 </div>
                 <div class="columns">
-                    <% if (permisos.indexOf('eliminar') != -1) { %>
-                    <a href="/incidencias/<%= ticket.idticket %>/<%= trabajo.idtrabajo %>"><button class="delete is-medium"></button></a>
+                    <% if (permisos.indexOf('eliminar') != -1 && ticket.idstatus != 3) { %>
+                        <a class="delete is-medium" href="#" onclick="if (confirm('¿Está seguro que desea eliminar el elemento?')) window.location = '/incidencias/<%= ticket.idticket %>/<%= trabajo.idtrabajo %>'"></a>
                     <% } %>
                 </div>
             </div>
@@ -80,6 +127,7 @@
         </div>
         <% } %>
     </div>
+    <% if (permisos.indexOf('asignaticket') != -1 && ticket.idstatus != 3) { %>
     <div class="section has-text-centered">
         <form action="/incidencias/reasignar/" method="POST">
             <input type="hidden" id="id" name="id" value="<%= ticket.idticket %>">
@@ -97,4 +145,27 @@
             </div>
         </form>
     </div>
+    <% } %>
 </div>
+
+<script>
+    var input = document.querySelector(
+            "#fileupload>.file-label>.file-input"
+        );
+        // Bind an listener to onChange event of the input
+        input.onchange = function () {
+            if(input.files.length > 0){
+                var fileNameContainer =
+                    document.querySelector(
+                        "#fileupload>.file-label>.file-name"
+                    );
+                // set the inner text of fileNameContainer
+                // to the name of the file
+                fileNameContainer.textContent =
+                    input.files[0].name;
+                fileNameContainer.classList.remove("is-hidden");
+            }
+        let button = document.querySelector("#fileupload>.button");
+        button.classList.remove("is-hidden");
+        }
+</script>

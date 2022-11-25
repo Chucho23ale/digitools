@@ -1,0 +1,62 @@
+<%- include('../includes/head.ejs') %>
+
+<div class="box">
+    <p class="is-size-3 has-text-centered pt-0 mt-0 pb-3">Editar Unidad</p>
+    <% for (let i of unidad){%>
+    <form action="/unidades/edit/<%= i.imei %>" method="post">
+        <fieldset disabled="disabled">
+            <label class="label">IMEI</label>
+            <p class="control has-icons-left">
+                <input name="imei" class="input" type="tel" value="<%= i.imei %>">
+                <span class="icon is-small is-left">
+                    <i class="fas fa-wifi"></i>
+                </span>
+            </p>
+        </fieldset>
+        <br>
+        <div class="field">
+            <label class="label">Nombre</label>
+            <p class="control has-icons-left">
+                <input value="<%= i.nombre %>" name="nombre" class="input" type="text" maxlength="25" required>
+                <span class="icon is-small is-left">
+                    <i class="fas fa-car"></i>
+                </span>
+            </p>
+        </div>
+        <br>
+        <fieldset disabled="disabled">
+            <label class="label">Cliente Asignado</label>
+            <p class="control has-icons-left">
+                <input class="input" type="text" value="<%= i.razonsocial %>">
+                <span class="icon is-small is-left">
+                    <i class="fas fa-user"></i>
+                </span>
+            </p>
+        </fieldset>
+        <br>
+        <div class="field">
+            <label class="label">Reasignar Cliente</label>
+            <div class="control">
+                <div class="select">
+                    <select name="cliente" id="cliente">
+                        <option value="" selected>Seleccione cliente</option>
+                        <% for (let cliente of clientes){%>
+                            <% if (cliente.razonsocial != i.razonsocial){%>
+                            <option value="<%= cliente.usuario %>"><%= cliente.razonsocial %></option>
+                            <% } %>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="field  is-grouped is-grouped-centered">
+            <div class="control">
+                <input type="submit" class="button is-info" id="enviar" name="enviar" value="Registrar">
+            </div>
+        </div>   
+    </form> 
+    <% } %>
+</div>
+
+<%- include('../includes/foot.ejs') %>

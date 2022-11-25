@@ -9,7 +9,7 @@ exports.get_root = (request, response, next) => {
     let info = request.session.info ? request.session.info : '';
     request.session.info = '';
     Unidad.fetchAllwC().then(([unidades, fieldData])=>{
-        Cliente.fetchCrearunidad().then(([clientes, fieldData2])=>{
+        Cliente.fetchClientes().then(([clientes, fieldData2])=>{
             Tipofalla.fetchAll().then(([tipofallas, fieldData3])=>{
                 response.render(path.join('unidades','unidades.ejs'),{
                     unidades: unidades,
@@ -17,6 +17,7 @@ exports.get_root = (request, response, next) => {
                     tipofallas: tipofallas,
                     permisos: request.session.permisos,
                     info: info,
+                    user: request.session.username,
                 });
             }).catch((error)=>{
                 console.log(error);
@@ -47,10 +48,53 @@ exports.post_new = (request,response,next) => {
 
 exports.get_delete = (request, response, next) => {
     Unidad.delete(request.params.imei)
-        .then( ([rows, fieldData]) => {
+        .then( ([unidad, fieldData]) => {
                 response.redirect('/unidades')
             })
         .catch( (error) => {
             console.log(error);
     });
+}
+
+exports.get_edit = (request, response, next) => {
+    Unidad.fetchUser(request.params.imei).then( ([unidad, fieldData]) => {
+        Cliente.fetchClientes().then(([clientes, fieldData2])=>{
+            Tipofalla.fetchAll().then(([tipofallas, fieldData3])=>{
+                response.render(path.join('unidades','unidad.edit.ejs'),{
+                    unidad: unidad,
+                    permisos: request.session.permisos,
+                    clientes: clientes,
+                    tipofallas: tipofallas,
+                });
+            }).catch( (error) => {
+                console.log(error);
+            });
+        }).catch( (error) => {
+            console.log(error);
+        });
+    }).catch( (error) => {
+        console.log(error);
+    });
+}
+
+exports.post_edit = (request, response, next) => {
+    if(request.body.cliente == ""){
+        //Update del nombre de la unidad
+        Unidad.edit(request.params.imei, request.body.nombre)
+        .then(() => {
+            response.redirect('/unidades')
+        })
+        .catch( (error) => {
+            console.log(error);
+        });
+    }else{
+        //Update de tiene unidad
+        Unidad.reasign(request.params.imei, request.body.nombre, request.body.cliente)
+        .then(() => {
+            response.redirect('/unidades')
+        })
+        .catch( (error) => {
+            console.log(error);
+        });
+    }
 }

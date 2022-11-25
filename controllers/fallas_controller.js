@@ -6,13 +6,14 @@ const Tipofalla = require('../models/tipofalla.model.js');
 
 exports.get_root = (request, response, next) => {
     Unidad.fetchAllwC().then(([unidades, fieldData])=>{
-        Cliente.fetchCrearunidad().then(([clientes, fieldData2])=>{
+        Cliente.fetchClientes().then(([clientes, fieldData2])=>{
             Tipofalla.fetchAll().then(([tipofallas, fieldData3])=>{
                 response.render(path.join('falla','falla.ejs'),{
                     unidades: unidades,
                     clientes: clientes,
                     tipofallas: tipofallas,
                     permisos: request.session.permisos,
+                    user: request.session.username,
                 });
             }).catch((error)=>{
                 console.log(error);
@@ -20,11 +21,9 @@ exports.get_root = (request, response, next) => {
         }).catch((error)=>{
             console.log(error);
         });
-        
     }).catch((error)=>{
         console.log(error);
     });
-    
 };
 
 exports.post_new = (request,response,next) => {

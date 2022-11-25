@@ -31,142 +31,122 @@
             </div>
             <div class="tile is-parent is-vertical is-4">
                 <div class="tile is-child box">
-                    <p class="title is-5 is-centered">Tipo de falla comunes</p>
-                    <div id="chart2">
+                    <p class="title is-5 is-centered">Clientes pendientes de pago</p>
+                    <div class="table-container">
+                        <table class="table is-hoverable has-text-centered is-fullwidth">
+                            <thead>
+                                <tr>
+                                    <th class="has-text-centered">Cliente</th>
+                                    <th class="has-text-centered">Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (let d of deudores) {%>
+                                    <tr>
+                                        <td><%= d.usuarioCliente %></td>
+                                        <td><%= d.deuda %></td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tile is-child box">
+                    <p class="title is-5 is-centered">Tiempo promedio en cerrar ticket</p>
+                    <div class="tabs">
+                        <ul>
+                            <li class="tab is-active" onclick="openTab(event,'general')" id="g"><a>General</a></li>
+                            <li class="tab" onclick="openTab(event,'falla')" id="f"><a>Por falla</a></li>
+                            <li class="tab" onclick="openTab(event,'trabajador')" id="t"><a>Por trabajador</a></li>
+                        </ul>
+                    </div>
+                    <div class="content-tab" id="general">
+                        <p class="title is-2"><%= promedio.promedio %></p>
+                    </div>
+                    <div class="content-tab" id="falla" style="display:none">
+                        <div class="table-container">
+                            <table class="table is-hoverable has-text-centered is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th class="has-text-centered">Falla</th>
+                                        <th class="has-text-centered">Tiempo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (let falla of tcf) {%>
+                                        <tr>
+                                            <td><%= falla.falla %></td>
+                                            <td><%= falla.tiempoabierto %></td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="content-tab" id="trabajador" style="display:none">
+                        <div class="table-container">
+                            <table class="table is-hoverable has-text-centered is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th class="has-text-centered">Empleado</th>
+                                        <th class="has-text-centered">Tiempo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (let falla of tce) {%>
+                                        <tr>
+                                            <td><%= falla.usuario %></td>
+                                            <td><%= falla.tiempoabierto %></td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="tile is-parent is-vertical is-4">
                 <div class="tile is-child box">
-                    <p class="title is-5 is-centered">Tiempo promedio en cerrar ticket</p>
-                    <p class="title is-2"><%= promedio.promedio %></p>
-                </div>
-                <div class="tile is-child box">
                     <p class="title is-5 is-centered">Porcentaje de tickets cobrados</p>
                     <div id="chart">
                     </div>
+                </div>
+                <div class="tile is-child box">
+                    <p class="title is-5 is-centered">Tipo de falla comunes</p>
+                    <div id="chart2">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tile is-ancestor is-hidden">
+            <div class="tile is-parent">
+                <div class="tile is-child box">
+                    <p class="title is-5 is-centered">Histograma de tickets cerrados</p>
+                    <div id="chart3"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="chart">
-</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/quarterOfYear.js"></script>
+<script src="/scripts/control.js"></script>
 <script>
-
-const chartporcentaje = () => {
-    //función que manda la petición asíncrona
-    fetch('/control/porcentajesecobra', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
+    function openTab(evt, tabName) {
+        var i, x, tablinks;
+        x = document.getElementsByClassName("content-tab");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
         }
-    }).then(result => {
-        return result.json(); //Regresa otra promesa
-    }).then(data => {
-        var options = {
-                series: [data.porcentaje],
-                chart: {
-                type: 'radialBar',
-                offsetY: -20,
-                sparkline: {
-                    enabled: true
-                }
-            },
-            plotOptions: {
-                radialBar: {
-                    startAngle: -90,
-                    endAngle: 90,
-                    track: {
-                        background: "#e7e7e7",
-                        strokeWidth: '97%',
-                        margin: 5, // margin is in pixels
-                        dropShadow: {
-                            enabled: true,
-                            top: 2,
-                            left: 0,
-                            color: '#999',
-                            opacity: 1,
-                            blur: 2
-                        }
-                    },
-                    dataLabels: {
-                        name: {
-                        show: false
-                    },
-                    value: {
-                        offsetY: -2,
-                        fontSize: '22px'
-                    }
-                    }
-                }
-            },
-            grid: {
-                padding: {
-                    top: -10
-                }
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shade: 'light',
-                    shadeIntensity: 0.4,
-                    inverseColors: false,
-                    opacityFrom: 1,
-                    opacityTo: 1,
-                    stops: [0, 50, 53, 91]
-                },
-            },
-            labels: ['Average Results'],
-        };
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
-    }).catch(err => {console.log(err);});
-};
-
-chartporcentaje();
-
-const chartfallacomun = () => {
-    //función que manda la petición asíncrona
-    fetch('/control/fallascomunes', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
+        tablinks = document.getElementsByClassName("tab");
+        for (i = 0; i < x.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" is-active", "");
         }
-    }).then(result => {
-        return result.json(); //Regresa otra promesa
-    }).then(data => {
-        var options2 = {
-            series: data[0].nf,
-            chart: {
-                width: 380,
-                type: 'pie',
-            },
-            labels: data[0].f,
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                    chart: {
-                        width: 200
-                    },
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }]
-        };
-
-        var chart2 = new ApexCharts(document.querySelector("#chart2"), options2);
-        chart2.render();
-    }).catch(err => {console.log(err);});
-};
-
-chartfallacomun();
-
-    
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " is-active";
+    }
 </script>
 <%- include('../includes/foot.ejs') %>

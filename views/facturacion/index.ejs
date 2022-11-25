@@ -1,0 +1,118 @@
+<%- include('../includes/head.ejs') %>
+
+<div class="container">
+    <div class="section">
+        <div class="has-text-centered">
+            <h1 class="is-size-2 is-centered">Facturación</h1>
+        </div>
+        <div class="section has-text-centered" >
+            <div class="field">
+                <label for="" class="label">Año y Mes</label>
+            </div>
+            <div class="control is-grouped">
+                <div class="select">
+                    <select name="año" id="año" onchange="actualizarmes()">
+                        <% for (let year of years){ %>
+                            <option value="<%= year.ano %>"><%= year.ano %></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="select">
+                    <select name="mes" id="mes" onchange="actualizartabla()">
+                        <% for (let month of months){ %>
+                            <option value="<%= month.mes %>"><%= month.name %></option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="table-container" >
+                <table class="table is-hoverable is-fullwidth has-text-centered">
+                    <thead>
+                        <tr>
+                            <th class="has-text-centered">Cliente</th>
+                            <th class="has-text-centered">Factura</th>
+                            <th class="has-text-centered">Pagado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla">
+                            <% for (let i of facturas) {%>
+                                <tr>
+                                    <td><%= i.usuarioCliente %></td>
+                                    <td><%= i.Factura %></td>
+                                    <% if (i.pagado == 0) {%>
+                                        <td><a href="#" class="button is-success" onclick="if (confirm('¿Está seguro que desea pagar el Cliente:  <%= i.usuarioCliente %>?')){ pagar('<%= i.usuarioCliente %>')}">Pagar</a></td>
+                                    <% }else { %>
+                                        <td><strong>Pagado</strong></td>
+                                    <% } %>
+                                </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function actualizarmes() {
+        let y = document.getElementById("año").value;
+        fetch('facturacion/meses/'+y, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then(result => {
+                return result.json(); //Regresa otra promesa
+            }).then(data => {
+                let html = '';
+                for (let month of data){
+                    html += `<option value="${ month.mes }">${ month.name }</option>`;
+                }
+                document.getElementById('mes').innerHTML = html;
+                actualizartabla();
+            }).catch(err => {
+                console.log(err);
+            });
+    }
+
+    function actualizartabla() {
+        let y = document.getElementById("año").value;
+        let m = document.getElementById("mes").value;
+        fetch('facturacion/fac/'+y+'/'+m, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then(result => {
+                return result.json(); //Regresa otra promesa
+            }).then(data => {
+                let html = '';
+                for (let i of data){
+                    html += `<tr>
+                                <td>${ i.usuarioCliente }</td>
+                                <td>${ i.Factura }</td>`
+                                    if (i.pagado == 0) {  
+                                        html += `<td><a href="#" class="button is-success" onclick="if (confirm('¿Está seguro que desea pagar el Cliente:  ${ i.usuarioCliente }?')){ pagar('${i.usuarioCliente}')}">Pagar</a></td>`
+                                    } else {
+                                        html +=`<td><strong>Pagado</strong></td>`
+                                    } 
+                                    html +=`
+                            </tr>`
+                }
+                document.getElementById('tabla').innerHTML = html;
+            }).catch(err => {
+                console.log(err);
+            });
+    }
+
+    function pagar(cliente) {
+        let y = document.getElementById("año").value;
+        let m = document.getElementById("mes").value;
+        window.location.href = "facturacion/pagar/"+cliente+"/"+y+"/"+m
+    }
+</script>
+
+
+
+<%- include('../includes/foot.ejs') %>

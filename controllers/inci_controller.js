@@ -10,55 +10,50 @@ const { response } = require('express');
 moment.locale('es-mx');
 
 exports.get_one = (request, response, next) => {
+    let id = request.params.id;
     Unidad.fetchAllwC().then(([unidades, fieldData])=>{
-        Cliente.fetchCrearunidad().then(([clientes, fieldData2])=>{
+        Cliente.fetchClientes().then(([clientes, fieldData2])=>{
             Tipofalla.fetchAll().then(([tipofallas, fieldData3])=>{
-                Ticket.fetchOne(request.params.id).then(([ticket, fieldData3])=>{
-                    Ticket.fetchTrabajos(request.params.id).then(([trabajos, fieldData])=>{
+                Ticket.fetchOne(id).then(([ticket, fieldData3])=>{
+                    Ticket.fetchTrabajos(id).then(([trabajos, fieldData])=>{
                         Cliente.fetchTrabajadores().then(([trabajadores, fieldData3])=>{
-                            ticket[0].fechainicio = moment(ticket[0].fechainicio).format('l');
-                            for (let trabajo of trabajos){
-                                trabajo.fecha = moment(trabajo.fecha).format('ll');
-                            }
-                            response.render(path.join('incidencias','incidencia.ejs'),{
-                                unidades: unidades,
-                                clientes: clientes,
-                                ticket: ticket[0],
-                                tipofallas: tipofallas,
-                                trabajos: trabajos,
-                                permisos: request.session.permisos,
-                                trabajadores: trabajadores,
-                            });
-                        }).catch((err)=>{
-                            console.log(err);
-                        }); 
-                    }).catch((err)=>{
-                        console.log(err);
-                    });    
-                }).catch((error)=>{
-                    console.log(error);
-                });
-            }).catch((error)=>{
-                console.log(error);
-            });
-        }).catch((error)=>{
-            console.log(error);
-        });
-    }).catch((error)=>{
-        console.log(error);
-    });
+                            Ticket.fetchEdit(id).then(([descripcion, fieldData])=>{
+                                Ticket.fetchimg(id).then(([img, fieldData])=>{
+                                    ticket[0].fechainicio = moment(ticket[0].fechainicio).format('l');
+                                    for (let trabajo of trabajos){
+                                        trabajo.fecha = moment(trabajo.fecha).format('ll');
+                                    }
+                                    response.render(path.join('incidencias','incidencia.ejs'),{
+                                        unidades: unidades,
+                                        descripcion: descripcion[0],
+                                        clientes: clientes,
+                                        ticket: ticket[0],
+                                        tipofallas: tipofallas,
+                                        trabajos: trabajos,
+                                        permisos: request.session.permisos,
+                                        trabajadores: trabajadores,
+                                        img: img,
+                                        user: request.session.username,
+                                    });
+                                }).catch((err)=>{console.log(err);});
+                            }).catch((err)=>{console.log(err);}); 
+                        }).catch((err)=>{console.log(err);}); 
+                    }).catch((err)=>{console.log(err);});    
+                }).catch((error)=>{console.log(error);});
+            }).catch((error)=>{console.log(error);});
+        }).catch((error)=>{console.log(error);});
+    }).catch((error)=>{console.log(error);});
 };
 
 exports.get_root = (request, response, next) => {
-
     Unidad.fetchAllwC().then(([unidades, fieldData])=>{
-        Cliente.fetchCrearunidad().then(([clientes, fieldData2])=>{
+        Cliente.fetchClientes().then(([clientes, fieldData2])=>{
             Tipofalla.fetchAll().then(([tipofallas, fieldData3])=>{
                 Ticket.fetchSA().then(([tickets_sa, fieldData3])=>{
                     Cliente.fetchTrabajadores().then(([trabajadores, fieldData3])=>{
-                        if (request.session.permisos.indexOf('ver_todos') == -1){
-                            Ticket.fetchA(request.session.username).then(([tickets_a, fieldData3])=>{
-                                response.render(path.join('incidencias','tabla.ejs'),{
+                        if (request.session.permisos.indexOf('todoslostickets') == -1) {
+                            Ticket.fetchA(request.session.username).then(([tickets_a, fieldData3]) => {
+                                response.render(path.join('incidencias', 'tabla.ejs'), {
                                     unidades: unidades,
                                     clientes: clientes,
                                     tickets_sa: tickets_sa,
@@ -66,13 +61,14 @@ exports.get_root = (request, response, next) => {
                                     tickets_a: tickets_a,
                                     permisos: request.session.permisos,
                                     trabajadores: trabajadores,
+                                    user: request.session.username,
                                 });
-                            }).catch((error)=>{
+                            }).catch((error) => {
                                 console.log(error);
                             });
-                        }else{
-                            Ticket.fetchAll(request.session.username).then(([tickets_a, fieldData3])=>{
-                                response.render(path.join('incidencias','tabla.ejs'),{
+                        } else {
+                            Ticket.fetchAll(request.session.username).then(([tickets_a, fieldData3]) => {
+                                response.render(path.join('incidencias', 'tabla.ejs'), {
                                     unidades: unidades,
                                     clientes: clientes,
                                     tickets_sa: tickets_sa,
@@ -80,26 +76,17 @@ exports.get_root = (request, response, next) => {
                                     tickets_a: tickets_a,
                                     permisos: request.session.permisos,
                                     trabajadores: trabajadores,
+                                    user: request.session.username,
                                 });
-                            }).catch((error)=>{
+                            }).catch((error) => {
                                 console.log(error);
                             });
                         }
-                    }).catch((error)=>{
-                        console.log(error);
-                    });
-                }).catch((error)=>{
-                    console.log(error);
-                });
-            }).catch((error)=>{
-                console.log(error);
-            });
-        }).catch((error)=>{
-            console.log(error);
-        });
-    }).catch((error)=>{
-        console.log(error);
-    });
+                    }).catch((error)=>{console.log(error);});
+                }).catch((error)=>{console.log(error);});
+            }).catch((error)=>{console.log(error);});
+        }).catch((error)=>{console.log(error);});
+    }).catch((error)=>{console.log(error);});
 };
 
 exports.post_new = (request, response, next) => {
@@ -179,5 +166,19 @@ exports.get_cerrar = (request,response,next) => {
 exports.get_abrir = (request,response,next) => {
     Ticket.abrir(request.params.id).then(([rows, fieldData]) => {
         response.redirect('/incidencias/');
+    }).catch((err)=>{console.log(err)});
+}
+
+exports.post_edit = (request, response, next) => {
+    let id = request.params.id;
+    Ticket.edit(request.body.descripcion, id).then(([rows, fieldData]) => {
+        response.redirect('/incidencias/' + id);
+    }).catch((err)=>{console.log(err)});
+}
+
+exports.post_img = (request, response, next) => {
+    let id = request.body.id;
+    Ticket.img(request.file.filename, id).then(([rows, fieldData]) => {
+        response.redirect('/incidencias/' + id);
     }).catch((err)=>{console.log(err)});
 }

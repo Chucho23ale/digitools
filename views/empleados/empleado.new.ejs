@@ -1,0 +1,66 @@
+<div class="modal" id="modal-empleado">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <div class="has-text-right">
+                <a href="#"><button class="delete close"></button></a>
+            </div>
+            <p class="is-size-3 has-text-centered pt-0 mt-0 pb-3">Nuevo Empleado</p>
+            <form action="/empleados/new" method="post">
+                <div class="field">
+                    <label class="label">Usuario</label>
+                    <p class="control has-icons-left">
+                        <input name="usuario" class="input" type="text" placeholder="RogelioFdz" maxlength="13" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <% if (info != '') { %>
+                            <p class="help is-danger">
+                            <%= info %>
+                            </p>
+                        <% } %>
+                    </p>
+                </div>
+                <br>
+                <div class="field">
+                    <label class="label">Contraseña</label>
+                    <p class="control has-icons-left">
+                        <input name="contraseña" class="input" type="password" placeholder="lucaTg1a8"
+                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" maxlength="100" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    <p class="help is-success">
+                        La contraseña debe contener al menos:
+                    <ul class="help is-success">
+                        <li>-un número</li>
+                        <li>-una letra minúscula y una mayúscula</li>
+                        <li>-ocho o mas carácteres</li>
+                    </ul>
+                    </p>
+                    </p>
+                </div>
+                <br>
+                <div class="field">
+                    <label class="label">Rol</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="rol" id="rol">
+                                <% for (let rol of roles){%>
+                                    <option value="<%= rol.idrol %>"><%= rol.nombre %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="field is-grouped-centered has-text-centered">
+                    <div class="control">
+                        <input type="submit" class="button is-info" id="enviar" name="enviar" value="Registrar">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>

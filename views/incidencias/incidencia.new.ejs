@@ -32,12 +32,13 @@
                         </div>
                     </div>
                 </div>
-                <br>    
+                <br>   
+                <% if (permisos.indexOf('registracliente') != -1) { %> 
                 <div class="field" >
                     <label class="label">Cliente</label>
                     <div class="control">
                         <div class="select">
-                            <select name="cliente" id="clientes_select">
+                            <select name="cliente" id="clientes_select" onchange="fetchunidades()">
                                 <option value="" disabled selected>Seleccione cliente</option>
                                 <% for (let cliente of clientes){%>
                                     <option value="<%= cliente.usuario %>"><%= cliente.razonsocial %></option>
@@ -46,13 +47,26 @@
                         </div>
                     </div>
                 </div>
-                <br>    
+                <br>
+                <% } else { %> 
+                <div class="field is is-hidden" >
+                    <label class="label">Cliente</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="cliente" id="clientes_select">
+                                <option value="<%= user %>"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br>   
+                <% }  %> 
                 <div class="field" id="unidades">
                     <label class="label">Unidad</label>
                     <div class="control">
                         <div class="select" id="unidades_lista">
                             <select name="unidad" id="unidades_select" disabled>
-                                <option value="" disabled selected>Seleccione unidad</option>
+                                <option value="null" disabled selected>Seleccione unidad</option>
                             </select>
                         </div>
                     </div>
@@ -80,10 +94,11 @@
             unidades.classList.remove('is-hidden');
         else
             unidades.classList.add('is-hidden');
-})
+    })
 
-        const clientes = document.getElementById('clientes_select');
-        clientes.addEventListener('change', ()=> {
+    const clientes = document.getElementById('clientes_select');
+    function fetchunidades(cliente) {
+        if (clientes.value != ""){
             fetch('/incidencias/get_unidades/', {
                 method: 'POST',
                 headers: {
@@ -104,6 +119,7 @@
             }).catch(err => {
                 console.log(err);
             });
-
-        });
+        }
+    };
+    fetchunidades()
 </script>

@@ -25,17 +25,35 @@ module.exports = class Usuario {
         return db.execute('SELECT * FROM usuarios WHERE oculto = 0');
     }
 
-    static fetchCrearunidad(){
+    static fetchClientes(){
         return db.execute('SELECT * FROM usuarios WHERE razonsocial IS NOT null AND razonsocial != "" AND oculto = 0');
+    }
+
+    static fetchEmpleados(){
+        return db.execute('SELECT RA.usuario, R.nombre FROM rolesasignados RA JOIN roles R WHERE RA.idrol = R.idrol AND R.idrol != 3 AND RA.oculto = 0');
+    }
+
+    static fetchTrabajadores(){
+        return db.execute('SELECT RA.usuario, R.nombre FROM rolesasignados RA JOIN roles R WHERE RA.idrol = R.idrol AND R.idrol = 2 AND RA.oculto = 0');
+    }
+
+    static fetchRol(){
+        return db.execute('SELECT * FROM roles WHERE idrol != 3');
     }
 
     static fetchOne(username){
         return db.execute('SELECT * FROM usuarios WHERE oculto = 0 AND usuario = ?', [username]);
     }
 
-    static delete(username) {
+    static deleteCliente(username) {
         return db.execute(
             'CALL eliminarcliente(?)', [username]
+        );
+    }
+
+    static deleteEmpleado(username) {
+        return db.execute(
+            'CALL eliminarempleado(?)', [username]
         );
     }
 
@@ -43,7 +61,8 @@ module.exports = class Usuario {
         return db.execute('SELECT p.nombre FROM privilegios p, rolesasignados ra, roles r, tieneprivilegio tp WHERE ra.usuario = ? AND ra.idrol = r.idrol AND r.idrol = tp.idrol AND tp.idprivilegio = p.idprivilegio', [username]);
     }
 
-    static fetchTrabajadores(){
-        return db.execute('SELECT ra.usuario FROM privilegios p, rolesasignados ra, roles r, tieneprivilegio tp WHERE ra.idrol = r.idrol AND r.idrol = tp.idrol AND tp.idprivilegio = p.idprivilegio AND p.nombre = "asignar"');
+    static edit(rfc, razonsocial, telefono, usuario){
+        return db.execute('UPDATE usuarios SET rfc = ?, razonsocial = ?, telefono = ? WHERE usuario = ?',
+        [rfc, razonsocial, telefono, usuario]);
     }
 }

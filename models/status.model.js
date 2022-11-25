@@ -6,11 +6,9 @@ module.exports = class Status {
         this.nombre = nombre;
 
     }
-    
     save(){
         status.push(this);
     }
-
     static fetchAll(){
         return status;
 

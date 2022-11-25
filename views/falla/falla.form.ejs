@@ -17,7 +17,7 @@
                         <tr>
                             <td><%= i.idfalla %></td>
                             <td><%= i.nombre %></td>
-                            <td><a href="/fallas/<%= i.idfalla %>"><button class="delete is-medium"></button></a></td>
+                            <td><a class="fas fa-trash" href="#" onclick="if (confirm('¿Está seguro que desea eliminar el elemento?')) window.location = '/fallas/<%= i.idfalla %>'"></a></td>
                         </tr>
                     <% } %>
                 </tbody>
