@@ -65,6 +65,11 @@ app.use('/control', rutascontrol);
 
 app.get('/',(request,response,next)=>{
     if (request.session.isLoggedIn){
+        if (request.session.permisos.indexOf('consultaticket') != -1) {
+            response.redirect('/incidencias');
+        } else {
+            response.redirect('/facturacion');
+        }
         response.redirect('/incidencias');
     } else{
         response.redirect('/user/login');
